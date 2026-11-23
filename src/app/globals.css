@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #070709;
+  --color-foreground: #F5F5F7;
+  --color-muted: #86868B;
+  --color-apple-blue: #0A84FF;
+}
+
+:root {
+  --background: #070709;
+  --foreground: #F5F5F7;
+}
+
+html {
+  background-color: #070709;
+  color: #F5F5F7;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: #070709;
+  color: #F5F5F7;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utility helpers */
+.glass-pill {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.03);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.glass-card:hover {
+  background: rgba(255, 255, 255, 0.045);
+  border-color: rgba(255, 255, 255, 0.14);
+}
