@@ -2,8 +2,14 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Portafolio | Developer & Designer",
-  description: "Portafolio profesional con estética minimalista futurista inspirada en Apple VisionOS.",
+  title: "Gonzalo Córdova — Senior Software Engineer",
+  description:
+    "Arquitecto de sistemas escalables e interfaces de alta precisión. Trabajo en la intersección entre ingeniería robusta y experiencia sensorial pulida.",
+  openGraph: {
+    title: "Gonzalo Córdova — Senior Software Engineer",
+    description: "Productos digitales de alto impacto técnico y estético.",
+    type: "website",
+  },
 };
 
 export default function RootLayout({
@@ -12,8 +18,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es" className="dark scroll-smooth">
-      <body className="min-h-screen bg-[#070709] text-[#F5F5F7] antialiased selection:bg-[#0A84FF]/25 selection:text-[#F5F5F7]">
+    <html lang="es" className="scroll-smooth">
+      <body className="min-h-screen bg-[#F7F6F2] text-[#111111] antialiased">
         {children}
       </body>
     </html>

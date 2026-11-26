@@ -1,142 +1,191 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef } from "react";
+import Image from "next/image";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { personalInfo } from "@/data/portfolio";
-import { ChevronDown, ArrowRight, Sparkles } from "lucide-react";
+import { ArrowDown, MapPin } from "lucide-react";
 
 export default function Hero() {
-  const scrollToAbout = () => {
-    const el = document.getElementById("about");
-    if (el) {
-      el.scrollIntoView({ behavior: "smooth" });
-    }
-  };
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: ref,
+    offset: ["start start", "end start"],
+  });
+
+  // Parallax: texture moves slower than scroll
+  const bgY = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
+  const contentY = useTransform(scrollYProgress, [0, 1], ["0%", "12%"]);
 
   return (
     <section
       id="hero"
-      className="relative h-screen min-h-[680px] w-full flex flex-col justify-between items-center px-6 pt-28 pb-8 overflow-hidden"
+      ref={ref}
+      className="relative min-h-screen w-full flex flex-col overflow-hidden bg-[#F7F6F2]"
     >
-      {/* Ambient background glow (subtle VisionOS atmospheric lighting) */}
-      <div
-        className="pointer-events-none absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[580px] h-[380px] rounded-full opacity-35 blur-[120px]"
-        style={{
-          background: "radial-gradient(circle, rgba(10, 132, 255, 0.18) 0%, rgba(255, 255, 255, 0.03) 60%, transparent 100%)",
-        }}
-      />
+      {/* Parallax Background Texture */}
+      <motion.div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{ y: bgY }}
+      >
+        {/* bg-texture.webp — se carga si existe, si no, fondo liso */}
+        <div
+          className="absolute inset-0 opacity-[0.15]"
+          style={{
+            backgroundImage: "url('/bg-texture.webp')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        />
+        {/* Fallback subtle paper grain via SVG */}
+        <div
+          className="absolute inset-0 opacity-[0.07]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E")`,
+            backgroundSize: "200px 200px",
+          }}
+        />
+      </motion.div>
 
-      {/* Subtle background grid lines for architectural precision */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:32px_32px] opacity-40" />
-
-      {/* Main Centered Content */}
-      <div className="relative z-10 flex-1 flex flex-col items-center justify-center max-w-3xl text-center space-y-7 my-auto">
-        {/* Apple Avatar / Memoji Placeholder with Halo */}
-        <motion.div
-          initial={{ scale: 0.85, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-          className="relative group cursor-pointer"
-        >
-          {/* Subtle Halo Glow */}
-          <div className="absolute -inset-2 rounded-full bg-gradient-to-tr from-[#0A84FF]/20 to-white/10 blur-md opacity-40 group-hover:opacity-75 transition-opacity duration-500" />
-
-          {/* Double ring circular container */}
-          <div className="relative w-24 h-24 sm:w-28 sm:h-28 rounded-full p-1 bg-white/[0.04] backdrop-blur-xl border border-white/[0.12] shadow-2xl flex items-center justify-center">
-            {/* Inner avatar area - ready for Apple Memoji / Photo */}
-            <div className="w-full h-full rounded-full bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/[0.08] flex items-center justify-center overflow-hidden">
-              <span className="text-3xl sm:text-4xl select-none transform group-hover:scale-105 transition-transform duration-300">
-                👨🏻‍💻
+      {/* Hero Content */}
+      <motion.div
+        style={{ y: contentY }}
+        className="relative z-10 flex-1 flex flex-col justify-center max-w-5xl mx-auto w-full px-6 sm:px-10 pt-32 pb-24"
+      >
+        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto] gap-12 md:gap-16 items-center">
+          {/* Left: Identity & Headline */}
+          <div className="space-y-8">
+            {/* Location / role tag */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="flex items-center gap-4"
+            >
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5C5C60] tracking-wide">
+                <MapPin className="w-3 h-3" />
+                {personalInfo.location}
               </span>
-            </div>
+              <span className="w-px h-3 bg-black/15" />
+              <span className="inline-flex items-center gap-1.5 text-xs font-medium">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                <span className="text-[#5C5C60]">{personalInfo.availability}</span>
+              </span>
+            </motion.div>
 
-            {/* Active status indicator dot */}
-            <span className="absolute bottom-1 right-1 flex h-4 w-4">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-              <span className="relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-[#070709]" />
-            </span>
+            {/* Headline */}
+            <motion.div
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="space-y-3"
+            >
+              <h1 className="text-[clamp(2.6rem,5vw,4.5rem)] font-semibold leading-[1.06] tracking-[-0.03em] text-[#111111]">
+                {personalInfo.headline}
+              </h1>
+              <p className="text-base sm:text-lg text-[#5C5C60] max-w-lg leading-relaxed font-normal">
+                {personalInfo.subheadline}
+              </p>
+            </motion.div>
+
+            {/* CTA row */}
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.35 }}
+              className="flex flex-wrap items-center gap-3"
+            >
+              <a
+                href="#projects"
+                className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold text-white bg-[#0E0E10] hover:bg-[#1f1f22] transition-colors tracking-tight"
+              >
+                Ver proyectos
+              </a>
+              <a
+                href="#contact"
+                className="inline-flex items-center px-5 py-2.5 rounded-full text-sm font-semibold text-[#111111] bg-transparent border border-black/15 hover:border-black/30 hover:bg-black/[0.03] transition-all tracking-tight"
+              >
+                Contacto directo
+              </a>
+            </motion.div>
+
+            {/* Bio / credential line */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="text-xs text-[#5C5C60] max-w-sm leading-relaxed border-l-2 border-black/10 pl-3"
+            >
+              {personalInfo.bio}
+            </motion.p>
           </div>
-        </motion.div>
 
-        {/* Status pill badge */}
-        <motion.div
-          initial={{ y: 10, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.15 }}
-          className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/[0.03] border border-white/[0.08] backdrop-blur-md"
-        >
-          <Sparkles className="w-3 h-3 text-[#0A84FF]" />
-          <span className="text-[11px] font-medium tracking-wider text-[#86868B] uppercase">
-            {personalInfo.status}
-          </span>
-        </motion.div>
-
-        {/* Minimalist Futuristic Headline */}
-        <motion.div
-          initial={{ y: 15, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.25 }}
-          className="space-y-4"
-        >
-          <h1 className="text-4xl sm:text-6xl md:text-7xl font-semibold tracking-tight text-[#F5F5F7] leading-[1.08]">
-            Arquitectura digital <br />
-            <span className="bg-gradient-to-b from-[#F5F5F7] via-white/80 to-[#86868B] bg-clip-text text-transparent">
-              de alta precisión.
-            </span>
-          </h1>
-
-          <p className="text-base sm:text-lg text-[#86868B] max-w-xl mx-auto font-normal leading-relaxed">
-            {personalInfo.subheadline}
-          </p>
-        </motion.div>
-
-        {/* CTA Buttons */}
-        <motion.div
-          initial={{ y: 15, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.35 }}
-          className="flex flex-wrap items-center justify-center gap-3 pt-2"
-        >
-          <a
-            href="#projects"
-            className="group inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-[#F5F5F7] bg-white/[0.07] hover:bg-white/[0.12] border border-white/[0.12] hover:border-white/[0.22] backdrop-blur-md transition-all shadow-sm"
+          {/* Right: Avatar */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+            className="flex justify-center md:justify-end"
           >
-            <span>Ver Proyectos</span>
-            <ArrowRight className="w-3.5 h-3.5 text-[#0A84FF] group-hover:translate-x-0.5 transition-transform" />
-          </a>
+            <div className="relative group">
+              {/* Outer ring / frame */}
+              <div className="relative w-48 h-48 sm:w-56 sm:h-56 md:w-64 md:h-64 rounded-[2rem] overflow-hidden bg-[#F0EFEA] border border-black/[0.08] shadow-[0_8px_32px_rgba(0,0,0,0.08)] transition-shadow group-hover:shadow-[0_16px_48px_rgba(0,0,0,0.12)]">
+                {/* Avatar image — replace /avatar.png with actual Memoji */}
+                <Image
+                  src="/avatar.png"
+                  alt={`Avatar de ${personalInfo.name}`}
+                  fill
+                  className="object-cover object-top"
+                  priority
+                  onError={() => {
+                    // Falls back gracefully if image missing
+                  }}
+                />
+                {/* Fallback initials overlay (shows if image not loaded) */}
+                <div className="absolute inset-0 flex flex-col items-center justify-center bg-[#F0EFEA] opacity-0 [img_error+&]:opacity-100">
+                  <span className="text-6xl font-semibold text-[#111111] tracking-tight">
+                    {personalInfo.name.split(" ").map((n) => n[0]).join("")}
+                  </span>
+                </div>
+              </div>
 
-          <a
-            href="#contact"
-            className="inline-flex items-center px-5 py-2.5 rounded-full text-xs sm:text-sm font-medium text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/[0.03] transition-all"
-          >
-            Contacto directo
-          </a>
-        </motion.div>
-      </div>
+              {/* Name tag */}
+              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 whitespace-nowrap px-4 py-1.5 rounded-full bg-white border border-black/[0.08] shadow-sm text-xs font-semibold text-[#111111] tracking-tight">
+                {personalInfo.name} · {personalInfo.title}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
 
-      {/* Subtle Scroll Down Indicator */}
+      {/* Scroll down indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.8, delay: 0.6 }}
-        className="relative z-10 flex flex-col items-center"
+        transition={{ delay: 0.8 }}
+        className="relative z-10 pb-8 flex flex-col items-center"
       >
-        <button
-          onClick={scrollToAbout}
-          className="group flex flex-col items-center gap-2 text-[#86868B] hover:text-[#F5F5F7] transition-colors py-2 cursor-pointer focus:outline-none"
-          aria-label="Desplazarse a la siguiente sección"
+        <a
+          href="#metrics"
+          className="group flex flex-col items-center gap-2 text-[#5C5C60] hover:text-[#111111] transition-colors"
+          aria-label="Ir a métricas"
         >
-          <span className="text-[10px] tracking-widest uppercase font-mono opacity-60 group-hover:opacity-100 transition-opacity">
-            Descubrir
+          <span className="text-[10px] font-mono uppercase tracking-widest opacity-60">
+            Scroll
           </span>
           <motion.div
-            animate={{ y: [0, 4, 0] }}
-            transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-            className="w-8 h-8 rounded-full flex items-center justify-center bg-white/[0.02] border border-white/[0.06] group-hover:border-white/[0.14] transition-colors"
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 2.2, repeat: Infinity, ease: "easeInOut" }}
+            className="w-7 h-7 rounded-full border border-black/15 flex items-center justify-center group-hover:border-black/30 transition-colors"
           >
-            <ChevronDown className="w-4 h-4 text-[#86868B] group-hover:text-[#0A84FF] transition-colors" />
+            <ArrowDown className="w-3 h-3" />
           </motion.div>
-        </button>
+        </a>
       </motion.div>
+
+      {/* Bottom edge separator */}
+      <div className="absolute bottom-0 inset-x-0 h-px bg-black/[0.06] z-10" />
     </section>
   );
 }

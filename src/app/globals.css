@@ -1,46 +1,53 @@
 @import "tailwindcss";
 
+/* ─── Design Tokens ──────────────────────────────────────────────────────── */
 @theme {
-  --color-canvas: #070709;
-  --color-foreground: #F5F5F7;
-  --color-muted: #86868B;
-  --color-apple-blue: #0A84FF;
+  --color-canvas:    #F7F6F2;
+  --color-surface:   #FFFFFF;
+  --color-surface-2: #F0EFEA;
+  --color-ink:       #0E0E10;
+  --color-primary:   #111111;
+  --color-muted:     #5C5C60;
+  --color-cobalt:    #1D4ED8;
+
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
 }
 
+/* ─── Base Reset ─────────────────────────────────────────────────────────── */
 :root {
-  --background: #070709;
-  --foreground: #F5F5F7;
+  --background: #F7F6F2;
+  --foreground: #111111;
 }
 
 html {
-  background-color: #070709;
-  color: #F5F5F7;
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #F7F6F2;
+  color: #111111;
   scroll-behavior: smooth;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-  background-color: #070709;
-  color: #F5F5F7;
+  background-color: #F7F6F2;
+  color: #111111;
   overflow-x: hidden;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
 }
 
-/* Glassmorphism utility helpers */
-.glass-pill {
-  background: rgba(255, 255, 255, 0.04);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* ─── Typographic precision ──────────────────────────────────────────────── */
+h1, h2, h3, h4 {
+  font-feature-settings: "ss01", "ss02", "cv01";
+  letter-spacing: -0.025em;
 }
 
-.glass-card {
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+/* ─── Selection ──────────────────────────────────────────────────────────── */
+::selection {
+  background-color: rgba(29, 78, 216, 0.15);
+  color: #111111;
 }
 
-.glass-card:hover {
-  background: rgba(255, 255, 255, 0.045);
-  border-color: rgba(255, 255, 255, 0.14);
-}
+/* ─── Scrollbar (editorial) ──────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #F7F6F2; }
+::-webkit-scrollbar-thumb { background: rgba(17, 17, 17, 0.12); border-radius: 2px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(17, 17, 17, 0.25); }

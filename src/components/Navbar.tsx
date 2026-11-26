@@ -3,78 +3,81 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { navItems } from "@/data/portfolio";
-import { Menu, X, ArrowUpRight } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [activeSection, setActiveSection] = useState("hero");
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 20);
+      setScrolled(window.scrollY > 32);
 
-      const sections = ["hero", "about", "projects", "contact"];
-      const scrollPosition = window.scrollY + 200;
+      const sections = ["hero", "metrics", "projects", "contact"];
+      const offset = window.scrollY + 120;
 
-      for (const section of sections) {
-        const el = document.getElementById(section);
-        if (el) {
-          const top = el.offsetTop;
-          const height = el.offsetHeight;
-          if (scrollPosition >= top && scrollPosition < top + height) {
-            setActiveSection(section);
-            break;
-          }
+      for (const id of sections) {
+        const el = document.getElementById(id);
+        if (el && offset >= el.offsetTop && offset < el.offsetTop + el.offsetHeight) {
+          setActiveSection(id);
+          break;
         }
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      <header className="fixed top-6 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
+      {/* Floating Pill */}
+      <header className="fixed top-5 inset-x-0 z-50 flex justify-center pointer-events-none px-4">
         <motion.nav
-          initial={{ y: -20, opacity: 0 }}
+          initial={{ y: -16, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className={`pointer-events-auto flex items-center justify-between gap-6 px-4 py-2 rounded-full border transition-all duration-300 ${
+          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+          className={[
+            "pointer-events-auto",
+            "flex items-center gap-1 px-2 py-2 rounded-full",
+            "bg-white/65 backdrop-blur-2xl",
+            "border border-black/10",
             scrolled
-              ? "bg-[#070709]/80 backdrop-blur-2xl border-white/[0.12] shadow-[0_8px_32px_rgba(0,0,0,0.5)]"
-              : "bg-white/[0.04] backdrop-blur-xl border-white/[0.08] shadow-[0_4px_24px_rgba(0,0,0,0.25)]"
-          }`}
+              ? "shadow-[0_8px_32px_rgba(0,0,0,0.10)]"
+              : "shadow-[0_4px_16px_rgba(0,0,0,0.06)]",
+            "transition-shadow duration-300",
+          ].join(" ")}
         >
-          {/* Brand mark */}
+          {/* Logo dot */}
           <a
             href="#hero"
-            className="flex items-center gap-2.5 pl-2 text-sm font-medium tracking-tight text-[#F5F5F7] hover:opacity-80 transition-opacity"
+            className="flex items-center gap-2 pl-2 pr-3 text-xs font-semibold tracking-tight text-[#111111]"
           >
-            <span className="w-2 h-2 rounded-full bg-[#0A84FF] shadow-[0_0_8px_rgba(10,132,255,0.6)]" />
-            <span className="font-semibold text-xs uppercase tracking-widest text-white/90">Portfolio</span>
+            <span className="w-5 h-5 rounded-full bg-[#0E0E10] flex items-center justify-center">
+              <span className="text-[8px] font-bold text-white tracking-widest">GC</span>
+            </span>
           </a>
 
-          {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-1">
+          {/* Nav Links */}
+          <div className="hidden sm:flex items-center gap-0.5">
             {navItems.map((item) => {
-              const sectionId = item.href.replace("#", "");
-              const isActive = activeSection === sectionId;
-
+              const id = item.href.replace("#", "");
+              const active = activeSection === id;
               return (
                 <a
                   key={item.href}
                   href={item.href}
-                  className={`relative px-3.5 py-1.5 text-xs font-medium tracking-wide transition-colors ${
-                    isActive ? "text-[#F5F5F7]" : "text-[#86868B] hover:text-[#F5F5F7]"
-                  }`}
+                  className={[
+                    "relative px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-colors duration-200",
+                    active ? "text-[#111111]" : "text-[#5C5C60] hover:text-[#111111]",
+                  ].join(" ")}
                 >
-                  {isActive && (
+                  {active && (
                     <motion.div
-                      layoutId="active-pill"
-                      className="absolute inset-0 rounded-full bg-white/[0.08] border border-white/[0.1]"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      layoutId="nav-active"
+                      className="absolute inset-0 rounded-full bg-black/[0.07]"
+                      transition={{ type: "spring", stiffness: 400, damping: 32 }}
                     />
                   )}
                   <span className="relative z-10">{item.label}</span>
@@ -83,47 +86,54 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Action CTA */}
-          <div className="flex items-center gap-2">
-            <a
-              href="#contact"
-              className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium text-[#F5F5F7] bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.08] hover:border-white/[0.18] transition-all"
-            >
-              <span>Hablemos</span>
-              <ArrowUpRight className="w-3 h-3 text-[#0A84FF]" />
-            </a>
+          {/* Contact CTA */}
+          <a
+            href="#contact"
+            className="hidden sm:inline-flex ml-1 mr-1 items-center px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#0E0E10] hover:bg-[#1a1a1c] transition-colors tracking-wide"
+          >
+            Hablemos
+          </a>
 
-            {/* Mobile menu trigger */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-1.5 text-[#86868B] hover:text-[#F5F5F7] transition-colors"
-              aria-label="Abrir menú"
-            >
-              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
-            </button>
-          </div>
+          {/* Mobile toggle */}
+          <button
+            className="sm:hidden p-1.5 ml-1 mr-0.5 text-[#5C5C60] hover:text-[#111111] transition-colors"
+            onClick={() => setMobileOpen(!mobileOpen)}
+            aria-label="Menú"
+          >
+            {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+          </button>
         </motion.nav>
       </header>
 
       {/* Mobile Drawer */}
       <AnimatePresence>
-        {mobileMenuOpen && (
+        {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -10 }}
-            className="fixed top-20 inset-x-4 z-40 md:hidden p-4 rounded-2xl bg-[#070709]/95 backdrop-blur-2xl border border-white/[0.1] shadow-2xl flex flex-col gap-2"
+            exit={{ opacity: 0, y: -8 }}
+            transition={{ duration: 0.2 }}
+            className="fixed top-[72px] inset-x-4 z-40 sm:hidden rounded-2xl bg-white/90 backdrop-blur-2xl border border-black/10 shadow-lg p-3 flex flex-col gap-1"
           >
             {navItems.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-2.5 rounded-lg text-sm font-medium text-[#86868B] hover:text-[#F5F5F7] hover:bg-white/[0.05] transition-all"
+                onClick={() => setMobileOpen(false)}
+                className="px-4 py-2.5 rounded-xl text-sm font-medium text-[#5C5C60] hover:text-[#111111] hover:bg-black/[0.04] transition-all"
               >
                 {item.label}
               </a>
             ))}
+            <div className="pt-1 mt-1 border-t border-black/[0.06]">
+              <a
+                href="#contact"
+                onClick={() => setMobileOpen(false)}
+                className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E0E10] text-center transition-colors"
+              >
+                Hablemos
+              </a>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,24 +1,19 @@
 import Navbar from "@/components/Navbar";
 import Hero from "@/components/Hero";
-import BentoGrid from "@/components/BentoGrid";
+import ValueMetrics from "@/components/ValueMetrics";
 import Projects from "@/components/Projects";
-import Footer from "@/components/Footer";
+import ContactFooter from "@/components/ContactFooter";
 
 export default function Home() {
   return (
-    <div className="relative min-h-screen bg-[#070709] text-[#F5F5F7] selection:bg-[#0A84FF]/25 selection:text-[#F5F5F7] overflow-x-hidden">
-      {/* Floating Pill Glass Navbar */}
+    <div className="min-h-screen bg-[#F7F6F2]">
       <Navbar />
-
-      {/* Hero Full Screen (h-screen) */}
       <main>
         <Hero />
-        <BentoGrid />
+        <ValueMetrics />
         <Projects />
       </main>
-
-      {/* Expansive Glass Footer */}
-      <Footer />
+      <ContactFooter />
     </div>
   );
 }
