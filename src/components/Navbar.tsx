@@ -13,10 +13,8 @@ export default function Navbar() {
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 32);
-
       const sections = ["hero", "metrics", "projects", "contact"];
-      const offset = window.scrollY + 120;
-
+      const offset = window.scrollY + 140;
       for (const id of sections) {
         const el = document.getElementById(id);
         if (el && offset >= el.offsetTop && offset < el.offsetTop + el.offsetHeight) {
@@ -25,42 +23,46 @@ export default function Navbar() {
         }
       }
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   return (
     <>
-      {/* Floating Pill */}
-      <header className="fixed top-5 inset-x-0 z-50 flex justify-center pointer-events-none px-4">
+      <header className="fixed top-6 inset-x-0 z-50 flex justify-center pointer-events-none px-4">
         <motion.nav
-          initial={{ y: -16, opacity: 0 }}
+          initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
           className={[
-            "pointer-events-auto",
-            "flex items-center gap-1 px-2 py-2 rounded-full",
-            "bg-white/65 backdrop-blur-2xl",
-            "border border-black/10",
+            "pointer-events-auto w-fit",
+            "flex items-center gap-2 px-3 py-2 rounded-full",
+            "bg-white/75 backdrop-blur-2xl",
+            "border border-black/15",
             scrolled
-              ? "shadow-[0_8px_32px_rgba(0,0,0,0.10)]"
-              : "shadow-[0_4px_16px_rgba(0,0,0,0.06)]",
+              ? "shadow-[0_12px_40px_rgba(0,0,0,0.10)]"
+              : "shadow-[0_8px_30px_rgba(0,0,0,0.07)]",
             "transition-shadow duration-300",
           ].join(" ")}
         >
-          {/* Logo dot */}
+          {/* Monogram badge */}
           <a
             href="#hero"
-            className="flex items-center gap-2 pl-2 pr-3 text-xs font-semibold tracking-tight text-[#111111]"
+            className="flex items-center pl-0.5 pr-1.5"
+            aria-label="Inicio"
           >
-            <span className="w-5 h-5 rounded-full bg-[#0E0E10] flex items-center justify-center">
-              <span className="text-[8px] font-bold text-white tracking-widest">GC</span>
+            <span className="w-8 h-8 rounded-full bg-[#0E0E10] flex items-center justify-center shrink-0 transition-transform duration-200 hover:scale-105">
+              <span className="text-[11px] font-bold text-white tracking-widest leading-none">
+                GC
+              </span>
             </span>
           </a>
 
-          {/* Nav Links */}
-          <div className="hidden sm:flex items-center gap-0.5">
+          {/* Separator */}
+          <span className="hidden sm:block w-px h-4 bg-black/10" />
+
+          {/* Nav Links with sliding pill */}
+          <div className="hidden sm:flex items-center gap-1 px-1">
             {navItems.map((item) => {
               const id = item.href.replace("#", "");
               const active = activeSection === id;
@@ -69,15 +71,18 @@ export default function Navbar() {
                   key={item.href}
                   href={item.href}
                   className={[
-                    "relative px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-colors duration-200",
-                    active ? "text-[#111111]" : "text-[#5C5C60] hover:text-[#111111]",
+                    "relative px-4 py-2 rounded-full text-[13px] font-medium tracking-tight",
+                    "transition-colors duration-150",
+                    active
+                      ? "text-[#111111]"
+                      : "text-[#5C5C60] hover:text-[#111111]",
                   ].join(" ")}
                 >
                   {active && (
-                    <motion.div
-                      layoutId="nav-active"
+                    <motion.span
+                      layoutId="nav-pill"
                       className="absolute inset-0 rounded-full bg-black/[0.07]"
-                      transition={{ type: "spring", stiffness: 400, damping: 32 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 35, mass: 0.6 }}
                     />
                   )}
                   <span className="relative z-10">{item.label}</span>
@@ -86,21 +91,46 @@ export default function Navbar() {
             })}
           </div>
 
-          {/* Contact CTA */}
+          {/* Separator */}
+          <span className="hidden sm:block w-px h-4 bg-black/10" />
+
+          {/* Hablemos CTA */}
           <a
             href="#contact"
-            className="hidden sm:inline-flex ml-1 mr-1 items-center px-4 py-1.5 rounded-full text-xs font-semibold text-white bg-[#0E0E10] hover:bg-[#1a1a1c] transition-colors tracking-wide"
+            className="hidden sm:inline-flex items-center px-5 py-2 rounded-full text-[13px] font-semibold text-white bg-[#0E0E10] hover:bg-[#1f1f22] active:scale-[0.97] transition-all tracking-tight"
           >
             Hablemos
           </a>
 
           {/* Mobile toggle */}
           <button
-            className="sm:hidden p-1.5 ml-1 mr-0.5 text-[#5C5C60] hover:text-[#111111] transition-colors"
+            className="sm:hidden p-2 text-[#5C5C60] hover:text-[#111111] transition-colors active:scale-90"
             onClick={() => setMobileOpen(!mobileOpen)}
             aria-label="Menú"
           >
-            {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
+            <AnimatePresence mode="wait" initial={false}>
+              {mobileOpen ? (
+                <motion.span
+                  key="close"
+                  initial={{ rotate: -45, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 45, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <X className="w-5 h-5" />
+                </motion.span>
+              ) : (
+                <motion.span
+                  key="open"
+                  initial={{ rotate: 45, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -45, opacity: 0 }}
+                  transition={{ duration: 0.15 }}
+                >
+                  <Menu className="w-5 h-5" />
+                </motion.span>
+              )}
+            </AnimatePresence>
           </button>
         </motion.nav>
       </header>
@@ -109,27 +139,27 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.2 }}
-            className="fixed top-[72px] inset-x-4 z-40 sm:hidden rounded-2xl bg-white/90 backdrop-blur-2xl border border-black/10 shadow-lg p-3 flex flex-col gap-1"
+            initial={{ opacity: 0, y: -10, scale: 0.97 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -6, scale: 0.98 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="fixed top-[80px] inset-x-4 z-40 sm:hidden rounded-2xl bg-white/95 backdrop-blur-2xl border border-black/10 shadow-[0_12px_40px_rgba(0,0,0,0.10)] p-3 flex flex-col gap-1"
           >
             {navItems.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="px-4 py-2.5 rounded-xl text-sm font-medium text-[#5C5C60] hover:text-[#111111] hover:bg-black/[0.04] transition-all"
+                className="px-4 py-3 rounded-xl text-sm font-medium text-[#5C5C60] hover:text-[#111111] hover:bg-black/[0.04] active:bg-black/[0.07] transition-all"
               >
                 {item.label}
               </a>
             ))}
-            <div className="pt-1 mt-1 border-t border-black/[0.06]">
+            <div className="pt-2 mt-1 border-t border-black/[0.06]">
               <a
                 href="#contact"
                 onClick={() => setMobileOpen(false)}
-                className="block px-4 py-2.5 rounded-xl text-sm font-semibold text-white bg-[#0E0E10] text-center transition-colors"
+                className="block px-4 py-3 rounded-xl text-sm font-semibold text-white bg-[#0E0E10] text-center active:scale-95 transition-transform"
               >
                 Hablemos
               </a>
